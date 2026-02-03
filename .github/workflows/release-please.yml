@@ -1,0 +1,38 @@
+# Reusable Release Please workflow
+# Call from other repos:
+#   uses: afv22/.github/.github/workflows/release-please.yml@main
+#   with:
+#     release-type: python
+
+name: Release Please
+
+on:
+  workflow_call:
+    inputs:
+      release-type:
+        description: "Release type (python, node, simple, etc.)"
+        required: true
+        type: string
+    outputs:
+      release-created:
+        description: "Whether a release was created"
+        value: ${{ jobs.release-please.outputs.release_created }}
+      tag-name:
+        description: "The tag name of the release"
+        value: ${{ jobs.release-please.outputs.tag_name }}
+      version:
+        description: "The version number of the release"
+        value: ${{ jobs.release-please.outputs.version }}
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+      version: ${{ steps.release.outputs.version }}
+    steps:
+      - uses: googleapis/release-please-action@v4
+        id: release
+        with:
+          release-type: ${{ inputs.release-type }}
