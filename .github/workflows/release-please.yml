@@ -24,6 +24,10 @@ on:
         description: "The version number of the release"
         value: ${{ jobs.release-please.outputs.version }}
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   release-please:
     runs-on: ubuntu-latest
