@@ -4,6 +4,11 @@
 #   with:
 #     release-type: python
 #   secrets: inherit
+#
+# For manifest-based configuration (using release-please-config.json and
+# .release-please-manifest.json in the calling repo), omit release-type:
+#   uses: afv22-projects/.github/.github/workflows/release-please.yml@main
+#   secrets: inherit
 
 name: Release Please
 
@@ -11,8 +16,8 @@ on:
   workflow_call:
     inputs:
       release-type:
-        description: "Release type (python, node, simple, etc.)"
-        required: true
+        description: "Release type (python, node, simple, etc.). Omit to use manifest-based config."
+        required: false
         type: string
     secrets:
       token:
@@ -37,12 +42,19 @@ jobs:
   release-please:
     runs-on: ubuntu-latest
     outputs:
-      release_created: ${{ steps.release.outputs.release_created }}
-      tag_name: ${{ steps.release.outputs.tag_name }}
-      version: ${{ steps.release.outputs.version }}
+      release_created: ${{ steps.release.outputs.release_created || steps.release-manifest.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name || steps.release-manifest.outputs.tag_name }}
+      version: ${{ steps.release.outputs.version || steps.release-manifest.outputs.version }}
     steps:
       - uses: googleapis/release-please-action@v4
         id: release
+        if: ${{ inputs.release-type != '' }}
         with:
           release-type: ${{ inputs.release-type }}
+          token: ${{ secrets.token || github.token }}
+
+      - uses: googleapis/release-please-action@v4
+        id: release-manifest
+        if: ${{ inputs.release-type == '' }}
+        with:
           token: ${{ secrets.token || github.token }}
