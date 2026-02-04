@@ -33,6 +33,9 @@ on:
       version:
         description: "The version number of the release"
         value: ${{ jobs.release-please.outputs.version }}
+      body:
+        description: "Release notes extracted from the CHANGELOG"
+        value: ${{ jobs.release-please.outputs.body }}
 
 permissions:
   contents: write
@@ -45,6 +48,7 @@ jobs:
       release_created: ${{ steps.release.outputs.release_created || steps.release-manifest.outputs.release_created }}
       tag_name: ${{ steps.release.outputs.tag_name || steps.release-manifest.outputs.tag_name }}
       version: ${{ steps.release.outputs.version || steps.release-manifest.outputs.version }}
+      body: ${{ steps.release.outputs.body || steps.release-manifest.outputs.body }}
     steps:
       - uses: googleapis/release-please-action@v4
         id: release

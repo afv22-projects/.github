@@ -13,6 +13,7 @@
 #       with:
 #         addon-id: my-addon@example.com
 #         tag-name: ${{ needs.release-please.outputs.tag-name }}
+#         release-note: ${{ needs.release-please.outputs.body }}
 #       secrets:
 #         amo-api-key: ${{ secrets.AMO_API_KEY }}
 #         amo-api-secret: ${{ secrets.AMO_API_SECRET }}
@@ -35,6 +36,10 @@ on:
         required: false
         type: string
         default: unlisted
+      release-note:
+        description: "Release notes for this version"
+        required: true
+        type: string
     secrets:
       amo-api-key:
         description: "AMO API issuer key"
@@ -60,5 +65,6 @@ jobs:
           addon-id: ${{ inputs.addon-id }}
           addon-path: extension.zip
           channel: ${{ inputs.channel }}
+          release-note: ${{ inputs.release-note }}
           auth-api-issuer: ${{ secrets.amo-api-key }}
           auth-api-secret: ${{ secrets.amo-api-secret }}
